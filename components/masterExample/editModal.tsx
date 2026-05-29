@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/alltype";
 import { MasterExample } from "./columns";
 
 interface EditMasterExampleDialogProps {
@@ -61,8 +62,8 @@ export function EditMasterExampleDialog({
       toast.success("Item updated successfully!");
       onClose();
       onUpdated();
-    } catch (error: any) {
-      toast.error(error.message || "Failed to update item");
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error) || "Failed to update item");
     } finally {
       setLoading(false);
     }

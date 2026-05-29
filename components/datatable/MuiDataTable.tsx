@@ -17,6 +17,7 @@ import { X, Filter } from "lucide-react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import * as XLSX from "xlsx";
+import { TableRowData, AutoTablePageData } from "@/lib/alltype";
 
 export interface FilterableColumn {
   id: string;
@@ -37,7 +38,7 @@ export interface MuiDataTableProps {
   defaultSortOrder?: "asc" | "desc";
   enableRowSelection?: boolean;
   filename?: string;
-  getRowId?: (row: any) => string | number;
+  getRowId?: (row: TableRowData) => string | number;
 }
 
 interface ActiveFilter {
@@ -53,7 +54,7 @@ function CustomToolbar({
   isDark,
 }: {
   filename: string;
-  rows: any[];
+  rows: TableRowData[];
   columns: GridColDef[];
   isDark: boolean;
 }) {
@@ -97,7 +98,7 @@ function CustomToolbar({
       styles: { fontSize: 8, cellPadding: 4 },
       headStyles: { fillColor: [22, 160, 133], textColor: 255, halign: "center" },
       bodyStyles: { halign: "center" },
-      didDrawPage: (data: any) => {
+      didDrawPage: (data: AutoTablePageData) => {
         doc.setFontSize(14);
         doc.text(filename || "Exported Data", data.settings.margin.left, 20);
       },
@@ -148,7 +149,7 @@ export function MuiDataTable({
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
 
-  const [rows, setRows] = useState<any[]>([]);
+  const [rows, setRows] = useState<TableRowData[]>([]);
   const [rowCount, setRowCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
@@ -219,7 +220,6 @@ export function MuiDataTable({
     activeFilters,
     additionalParamsKey,
     apiUrl,
-    refreshKey,
   ]);
 
   useEffect(() => {

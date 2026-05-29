@@ -22,6 +22,7 @@ import {
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { User } from "./columns";
+import { UserUpdatePayload, getErrorMessage, RolesFilterApiResponse } from "@/lib/alltype";
 
 interface Role { id: number; role: string; }
 
@@ -63,10 +64,10 @@ export function EditUserDialog({ isOpen, onClose, onUserUpdated, user }: EditUse
   const fetchOptions = async () => {
     try {
       const rolesRes = await fetch("/api/v1/roles/filters");
-      const rolesData = await rolesRes.json();
+      const rolesData = await rolesRes.json() as RolesFilterApiResponse;
       if (rolesData.roles) {
-        const rolesList = rolesData.roles.map((r: any) => ({
-          id: parseInt(r.value),
+        const rolesList = rolesData.roles.map((r) => ({
+          id: r.value,
           role: r.label,
         }));
         setRoles(rolesList);
@@ -90,7 +91,7 @@ export function EditUserDialog({ isOpen, onClose, onUserUpdated, user }: EditUse
     }
     setLoading(true);
     try {
-      const payload: any = {
+      const payload: UserUpdatePayload = {
         name: formData.name,
         dept: formData.dept || null,
         nik: formData.nik,
@@ -110,8 +111,8 @@ export function EditUserDialog({ isOpen, onClose, onUserUpdated, user }: EditUse
       toast.success("User updated successfully!");
       onClose();
       onUserUpdated();
-    } catch (error: any) {
-      toast.error(error.message || "Failed to update user");
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error) || "Failed to update user");
     } finally {
       setLoading(false);
     }

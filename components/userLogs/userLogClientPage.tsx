@@ -44,7 +44,7 @@ export default function UserLogPage() {
           paginationSize={15}
           enableRowSelection={false}
           filename="user_logs_export"
-          getRowId={(row) => row.id}
+          getRowId={(row) => row.id ?? 0}
         />
       </Card>
     </div>

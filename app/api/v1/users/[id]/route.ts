@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
+import { UserUpdateData } from "@/lib/alltype";
 
 export async function PUT(
   request: NextRequest,
@@ -21,7 +22,7 @@ export async function PUT(
     }
 
     const body = await request.json();
-    const updateData: any = {
+    const updateData: UserUpdateData = {
       name: body.name,
       dept: body.dept ?? null,
       nik: body.nik,

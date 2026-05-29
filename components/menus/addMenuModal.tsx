@@ -23,6 +23,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Plus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { getErrorMessage, RolesFilterApiResponse, MenusFilterApiResponse } from "@/lib/alltype";
 import {
   ChevronDown, User, Layout, MapPin, BarChart3, FileText, LogOut,
   Mail, Settings, CheckSquare, Bot, MessageSquare, ShoppingCart,
@@ -84,13 +85,13 @@ export function AddMenuModal({ onMenuAdded }: AddMenuModalProps) {
         fetch("/api/v1/roles/filters"),
         fetch("/api/v1/menu/filters"),
       ]);
-      const rolesData = await rolesRes.json();
-      const menusData = await menusRes.json();
+      const rolesData = await rolesRes.json() as RolesFilterApiResponse;
+      const menusData = await menusRes.json() as MenusFilterApiResponse;
       if (rolesData.roles) {
-        setRoles(rolesData.roles.map((r: any) => ({ id: r.value, role: r.label })));
+        setRoles(rolesData.roles.map((r) => ({ id: r.value, role: r.label })));
       }
       if (menusData.menus) {
-        setParentMenus(menusData.menus.map((m: any) => ({ id: m.value, title: m.label })));
+        setParentMenus(menusData.menus.map((m) => ({ id: m.value, title: m.label })));
       }
     } catch {
       toast.error("Failed to load form options");
@@ -139,8 +140,8 @@ export function AddMenuModal({ onMenuAdded }: AddMenuModalProps) {
       setOpen(false);
       resetForm();
       onMenuAdded?.();
-    } catch (error: any) {
-      toast.error(error.message || "Failed to create menu");
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error) || "Failed to create menu");
     } finally {
       setLoading(false);
     }

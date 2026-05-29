@@ -51,7 +51,7 @@ export default function RolesPage() {
           paginationSize={10}
           enableRowSelection={false}
           filename="roles_export"
-          getRowId={(row) => row.id}
+          getRowId={(row) => row.id ?? 0}
         />
       </Card>
 

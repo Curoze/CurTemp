@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { PrismaWhereFilter, PrismaOrderBy, MenuDbRow } from "@/lib/alltype";
 
 export async function GET(request: NextRequest) {
   try {
@@ -13,7 +14,7 @@ export async function GET(request: NextRequest) {
     const sortBy = searchParams.get("sortBy") || "updated_at";
     const sortOrder = searchParams.get("sortOrder") || "desc";
 
-    const where: any = { is_active: true };
+    const where: PrismaWhereFilter = { is_active: true };
 
     const filterColumns: string[] = [];
     const filterValues: string[] = [];
@@ -25,9 +26,9 @@ export async function GET(request: NextRequest) {
       if (filterValues[i]) where[col] = { contains: filterValues[i], mode: "insensitive" };
     });
 
-    const orderBy: any = { [sortBy]: sortOrder };
+    const orderBy: PrismaOrderBy = { [sortBy]: sortOrder };
     const total = await prisma.menus.count({ where });
-    const menus = await prisma.menus.findMany({
+    const menus: MenuDbRow[] = await prisma.menus.findMany({
       where, skip, take: limit, orderBy,
       include: {
         parent: { select: { id: true, title: true, icon: true, path: true } },
@@ -36,9 +37,9 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    const items = menus.map((m: any) => ({
+    const items = menus.map((m) => ({
       ...m,
-      roles: m.menuRoles.map((mr: any) => mr.role),
+      roles: (m.menuRoles ?? []).map((mr) => mr.role),
       menuRoles: undefined,
     }));
 

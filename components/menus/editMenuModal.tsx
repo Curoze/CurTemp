@@ -22,6 +22,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { getErrorMessage, RolesFilterApiResponse, MenusFilterApiResponse } from "@/lib/alltype";
 import { Menu } from "./columns";
 import {
   ChevronDown, User, Layout, MapPin, BarChart3, FileText, LogOut,
@@ -97,21 +98,21 @@ export function EditMenuDialog({ isOpen, onClose, onMenuUpdated, menu }: EditMen
         fetch("/api/v1/roles/filters"),
         fetch("/api/v1/menu/filters"),
       ]);
-      const rolesData = await rolesRes.json();
-      const menusData = await menusRes.json();
+      const rolesData = await rolesRes.json() as RolesFilterApiResponse;
+      const menusData = await menusRes.json() as MenusFilterApiResponse;
 
       if (rolesData.roles) {
-        const rolesList = rolesData.roles.map((r: any) => ({
-          id: parseInt(r.value),
+        const rolesList = rolesData.roles.map((r) => ({
+          id: r.value,
           role: r.label,
         }));
         setRoles(rolesList);
         if (menu?.roles) {
-          setSelectedRoles(menu.roles.map((r: any) => r.id));
+          setSelectedRoles(menu.roles.map((r) => r.id));
         }
       }
       if (menusData.menus) {
-        setParentMenus(menusData.menus.map((m: any) => ({ id: m.value, title: m.label })));
+        setParentMenus(menusData.menus.map((m) => ({ id: m.value, title: m.label })));
       }
     } catch {
       toast.error("Failed to load form options");
@@ -154,8 +155,8 @@ export function EditMenuDialog({ isOpen, onClose, onMenuUpdated, menu }: EditMen
       toast.success("Menu updated successfully!");
       onMenuUpdated();
       onClose();
-    } catch (error: any) {
-      toast.error(error.message || "Failed to update menu");
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error) || "Failed to update menu");
     } finally {
       setLoading(false);
     }

@@ -1,13 +1,14 @@
 import { NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { MenuRoleRow } from "@/lib/alltype";
 
 export async function GET() {
   try {
     const user = await requireAuth();
     if (!user?.role_id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const menuRoles = await prisma.menuRoles.findMany({
+    const menuRoles: MenuRoleRow[] = await prisma.menuRoles.findMany({
       where: { role_id: user.role_id },
       include: {
         menu: {
@@ -22,12 +23,12 @@ export async function GET() {
     });
 
     const parentMenus = menuRoles
-      .filter((mr: any) => mr.menu.parent_id === null && mr.menu.is_active)
-      .map((mr: any) => mr.menu)
-      .sort((a: any, b: any) => a.sort_order - b.sort_order);
+      .filter((mr) => mr.menu.parent_id === null && mr.menu.is_active)
+      .map((mr) => mr.menu)
+      .sort((a, b) => a.sort_order - b.sort_order);
 
-    const transformedMenus = parentMenus.map((menu: any) => {
-      const hasChildren = menu.children?.length > 0;
+    const transformedMenus = parentMenus.map((menu) => {
+      const hasChildren = (menu.children?.length ?? 0) > 0;
       return {
         id: menu.id,
         title: menu.title,
@@ -35,7 +36,7 @@ export async function GET() {
         icon: menu.icon ? parseInt(menu.icon) : undefined,
         submenu: hasChildren,
         submenuItems: hasChildren
-          ? menu.children.map((child: any) => ({
+          ? menu.children!.map((child) => ({
               title: child.title,
               path: child.path || "",
               icon: child.icon ? parseInt(child.icon) : undefined,

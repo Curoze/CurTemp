@@ -8,7 +8,6 @@ import { AddMenuModal } from "@/components/menus/addMenuModal";
 import DeleteConfirmationDialog from "@/components/modal/deleteConfirm";
 import { Card } from "@/components/ui/card";
 import { useMenuContext } from "@/components/contexts/MenuContext";
-import { useEffect } from "react";
 
 export default function MenusPage() {
   const [editingMenu, setEditingMenu] = useState<Menu | null>(null);
@@ -58,7 +57,7 @@ export default function MenusPage() {
           paginationSize={10}
           enableRowSelection={false}
           filename="menu_export"
-          getRowId={(row) => row.id}
+          getRowId={(row) => row.id ?? 0}
         />
       </Card>
 

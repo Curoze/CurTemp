@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
+import { PrismaWhereFilter, PrismaOrderBy, UserDbRow } from "@/lib/alltype";
 
 export async function GET(request: NextRequest) {
   try {
@@ -14,7 +15,7 @@ export async function GET(request: NextRequest) {
     const sortBy = searchParams.get("sortBy") || "updated_at";
     const sortOrder = searchParams.get("sortOrder") || "desc";
 
-    const where: any = { is_active: true };
+    const where: PrismaWhereFilter = { is_active: true };
 
     const filterColumns: string[] = [];
     const filterValues: string[] = [];
@@ -29,7 +30,7 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get("status");
     if (status) where.status = status;
 
-    let orderBy: any;
+    let orderBy: PrismaOrderBy;
     if (sortBy === "role") {
       orderBy = { role: { role: sortOrder } };
     } else {
@@ -37,12 +38,12 @@ export async function GET(request: NextRequest) {
     }
 
     const total = await prisma.users.count({ where });
-    const users = await prisma.users.findMany({
+    const users: UserDbRow[] = await prisma.users.findMany({
       where, skip, take: limit, orderBy,
       include: { role: { select: { id: true, role: true } } },
     });
 
-    const items = users.map((u: any) => ({
+    const items = users.map((u) => ({
       id: u.id,
       name: u.name,
       nik: u.nik,

@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/select";
 import { Plus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { getErrorMessage, RolesFilterApiResponse } from "@/lib/alltype";
 
 interface Role { id: number; role: string; }
 
@@ -50,9 +51,9 @@ export function AddUserModal({ onUserAdded }: AddUserModalProps) {
   const fetchOptions = async () => {
     try {
       const rolesRes = await fetch("/api/v1/roles/filters");
-      const rolesData = await rolesRes.json();
+      const rolesData = await rolesRes.json() as RolesFilterApiResponse;
       if (rolesData.roles) {
-        setRoles(rolesData.roles.map((r: any) => ({ id: r.value, role: r.label })));
+        setRoles(rolesData.roles.map((r) => ({ id: r.value, role: r.label })));
       }
     } catch {
       toast.error("Failed to load options");
@@ -90,8 +91,8 @@ export function AddUserModal({ onUserAdded }: AddUserModalProps) {
       setOpen(false);
       resetForm();
       onUserAdded?.();
-    } catch (error: any) {
-      toast.error(error.message || "Failed to create user");
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error) || "Failed to create user");
     } finally {
       setLoading(false);
     }

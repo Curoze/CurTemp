@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { PrismaWhereFilter, UserLogDbRow } from "@/lib/alltype";
 
 export async function GET(request: NextRequest) {
   try {
@@ -13,7 +14,7 @@ export async function GET(request: NextRequest) {
     const sortBy = searchParams.get("sortBy") || "created_at";
     const sortOrder = searchParams.get("sortOrder") || "desc";
 
-    const where: any = {};
+    const where: PrismaWhereFilter = {};
 
     const filterColumns: string[] = [];
     const filterValues: string[] = [];
@@ -34,12 +35,12 @@ export async function GET(request: NextRequest) {
     });
 
     const total = await prisma.userLogs.count({ where });
-    const logs = await prisma.userLogs.findMany({
+    const logs: UserLogDbRow[] = await prisma.userLogs.findMany({
       where, skip, take: limit, orderBy: { [sortBy]: sortOrder },
       include: { user: { select: { name: true, nik: true } } },
     });
 
-    const items = logs.map((log: any) => ({
+    const items = logs.map((log) => ({
       id: log.id,
       username: log.user?.nik || "unknown",
       action: log.action,

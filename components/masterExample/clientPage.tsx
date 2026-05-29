@@ -51,7 +51,7 @@ export default function MasterExamplePage() {
           paginationSize={10}
           enableRowSelection={false}
           filename="master_example_export"
-          getRowId={(row) => row.id}
+          getRowId={(row) => row.id ?? 0}
         />
       </Card>
 

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { PrismaWhereFilter } from "@/lib/alltype";
 
 export async function GET(request: NextRequest) {
   try {
@@ -13,7 +14,7 @@ export async function GET(request: NextRequest) {
     const sortBy = searchParams.get("sortBy") || "updated_at";
     const sortOrder = searchParams.get("sortOrder") || "desc";
 
-    const where: any = { is_active: true };
+    const where: PrismaWhereFilter = { is_active: true };
 
     const filterColumns: string[] = [];
     const filterValues: string[] = [];

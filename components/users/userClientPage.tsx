@@ -62,7 +62,7 @@ export default function UsersPage() {
           paginationSize={10}
           enableRowSelection={false}
           filename="users_export"
-          getRowId={(row) => row.id}
+          getRowId={(row) => row.id ?? 0}
         />
       </Card>
 

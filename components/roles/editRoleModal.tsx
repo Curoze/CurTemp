@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/alltype";
 import { Role } from "./columns";
 
 interface EditRoleDialogProps {
@@ -52,8 +53,8 @@ export function EditRoleDialog({ isOpen, onClose, onRoleUpdated, role }: EditRol
       toast.success("Role updated successfully!");
       onClose();
       onRoleUpdated();
-    } catch (error: any) {
-      toast.error(error.message || "Failed to update role");
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error) || "Failed to update role");
     } finally {
       setLoading(false);
     }

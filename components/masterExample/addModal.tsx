@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Plus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { getErrorMessage } from "@/lib/alltype";
 
 interface AddMasterExampleModalProps {
   onAdded?: () => void;
@@ -46,8 +47,8 @@ export function AddMasterExampleModal({ onAdded }: AddMasterExampleModalProps) {
       setOpen(false);
       resetForm();
       onAdded?.();
-    } catch (error: any) {
-      toast.error(error.message || "Failed to create item");
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error) || "Failed to create item");
     } finally {
       setLoading(false);
     }

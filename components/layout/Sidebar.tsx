@@ -37,7 +37,7 @@ import { useMenuContext } from "@/components/contexts/MenuContext";
 export const Sidebar: React.FC<SidebarProps> = ({ className = "" }) => {
   const router = useRouter();
   const pathname = usePathname();
-  const { data: session } = useSession();
+  useSession();
   const sidebar = useStore(useSidebarToggle, (state) => state);
   const [openMenus, setOpenMenus] = useState<number[]>([]);
   const [menus, setMenus] = useState<MenuItem[]>([]);
@@ -72,7 +72,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ className = "" }) => {
       setIsLoading(true);
       const response = await fetch("/api/v1/menu/list");
       if (!response.ok) throw new Error("Failed to fetch menu data");
-      const data = await response.json();
+      const data = await response.json() as MenuItem[];
       setMenus(data);
     } catch (error) {
       console.error("Error fetching menu", error);

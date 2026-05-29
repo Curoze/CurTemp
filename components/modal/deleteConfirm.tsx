@@ -8,9 +8,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { TableRowData } from "@/lib/alltype";
 
 type DeleteConfirmationDialogProps = {
-  data: any | null;
+  data: TableRowData | null;
   isOpen: boolean;
   url: string;
   onClose: () => void;

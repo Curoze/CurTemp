@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
 import { getClientIP } from "@/utils/getClient";
 import { createUserLog } from "@/lib/userLogger";
+import type { AuthMenuRoleItem } from "@/lib/alltype";
 
 declare module "next-auth" {
   interface Session {
@@ -117,7 +118,7 @@ export const authOptions: AuthOptions = {
             throw new Error("Invalid username or password");
           }
 
-          const allowedPaths = user.role.menuRoles
+          const allowedPaths = (user.role.menuRoles as AuthMenuRoleItem[])
             .filter((mr) => mr.menu.is_active && mr.menu.path)
             .map((mr) => mr.menu.path as string);
 
