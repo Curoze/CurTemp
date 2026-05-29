@@ -1,0 +1,118 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==========================
+//    USERS & ROLES
+// ==========================
+
+model Users {
+  id         Int       @id @default(autoincrement())
+  name       String
+  dept       String?
+  nik        String
+  role_id    Int
+  pass       String
+  status     String    @default("unapproved")
+  ipAddress  String    @default("free")
+  is_active  Boolean   @default(true)
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
+
+  role     Roles      @relation(fields: [role_id], references: [id], onDelete: Restrict)
+  userLogs UserLogs[]
+
+  @@map("users")
+}
+
+model Roles {
+  id          Int       @id @default(autoincrement())
+  role        String
+  description String?
+  is_active   Boolean   @default(true)
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+  deleted_at  DateTime?
+
+  users     Users[]
+  menuRoles MenuRoles[]
+
+  @@map("roles")
+}
+
+model UserLogs {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  action     String
+  ip         String
+  userAgent  String   @map("user_agent")
+  success    Boolean  @default(true)
+  note       String?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  user Users @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("user_logs")
+  @@index([user_id])
+  @@index([created_at])
+}
+
+// ==========================
+//        MENU
+// ==========================
+
+model Menus {
+  id         Int       @id @default(autoincrement())
+  title      String
+  icon       String?
+  parent_id  Int?
+  path       String?
+  is_active  Boolean   @default(true)
+  sort_order Int       @default(0)
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+
+  parent    Menus?      @relation("MenuToMenu", fields: [parent_id], references: [id], onDelete: SetNull)
+  children  Menus[]     @relation("MenuToMenu")
+  menuRoles MenuRoles[]
+
+  @@map("menus")
+}
+
+model MenuRoles {
+  id      Int @id @default(autoincrement())
+  menu_id Int
+  role_id Int
+
+  menu Menus @relation(fields: [menu_id], references: [id], onDelete: Cascade)
+  role Roles @relation(fields: [role_id], references: [id], onDelete: Cascade)
+
+  @@unique([menu_id, role_id])
+  @@map("menu_roles")
+}
+
+// ==========================
+//    MASTER DATA EXAMPLE
+// ==========================
+
+model MasterExample {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String?
+  value       String?
+  is_active   Boolean   @default(true)
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+
+  @@map("master_example")
+}
